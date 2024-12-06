@@ -27,7 +27,7 @@ RUN apt-get update \
 
 # keep pip up to date
 RUN pip install --upgrade pip
-RUN pip install poetry==1.8.1 hdbcli oracledb nfelib
+RUN pip install poetry==1.8.1
 
 RUN apt-get update && apt-get install -y libpq5
 
@@ -78,8 +78,5 @@ LABEL source="https://github.com/sartography/spiff-arena/spiffworkflow-backend"
 LABEL description="Backend component of SpiffWorkflow, a software development platform for building, running, and monitoring executable diagrams"
 
 COPY --from=setup /app /app
-
-# Set library path in the final stage
-ENV LD_LIBRARY_PATH="/app/oracle/instantclient_21_13:$LD_LIBRARY_PATH"
 
 CMD ["./bin/boot_server_in_docker"]
