@@ -21,9 +21,9 @@ FROM base AS deployment
 # default-mysql-client for convenience accessing mysql docker container
 # vim ftw
 RUN apt-get update \
- && apt-get clean -y \
- && apt-get install -y -q git-core curl procps gunicorn3 default-mysql-client vim-tiny dos2unix \
- && rm -rf /var/lib/apt/lists/*
+  && apt-get clean -y \
+  && apt-get install -y -q git-core curl procps gunicorn3 default-mysql-client vim-tiny libkrb5support0 libexpat1 dos2unix \
+  && rm -rf /var/lib/apt/lists/*
 
 RUN pip install poetry==1.6.1
 
