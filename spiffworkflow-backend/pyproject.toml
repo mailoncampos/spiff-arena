@@ -28,7 +28,7 @@ flask-restful = "*"
 SpiffWorkflow = {git = "https://github.com/sartography/SpiffWorkflow", rev = "main"}
 # SpiffWorkflow = {develop = true, path = "../../spiffworkflow/" }
 # SpiffWorkflow = {develop = true, path = "../../SpiffWorkflow/" }
-sentry-sdk = {extras = ['flask'], version = "^2.16"}
+sentry-sdk = {extras = ['flask'], version = "^2.19"}
 # sphinx-autoapi = "^2.0"
 psycopg2 = "^2.9.10"
 typing-extensions = "^4.12.2"
@@ -65,7 +65,7 @@ sqlalchemy-stubs = { git = "https://github.com/burnettk/sqlalchemy-stubs.git", r
 simplejson = "^3.19.3"
 pytz = "^2024.2"
 dateparser = "^1.2.0"
-cryptography = "^43.0"
+cryptography = "^44.0"
 prometheus-flask-exporter = "^0.23.1"
 
 sqlalchemy = "^2.0.31"
@@ -73,7 +73,7 @@ marshmallow-sqlalchemy = "^1.0.0"
 
 # mysqlclient lib is deemed better than the mysql-connector-python lib by sqlalchemy
 # https://docs.sqlalchemy.org/en/20/dialects/mysql.html#module-sqlalchemy.dialects.mysql.mysqlconnector
-mysqlclient = "^2.2.5"
+mysqlclient = "^2.2.6"
 flask-session = "^0.8.0"
 flask-oauthlib = "^0.9.6"
 celery = {extras = ["redis"], version = "^5.4.0"}
@@ -91,7 +91,7 @@ spiffworkflow-backend = "spiffworkflow_backend.__main__:main"
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
 coverage = {extras = ["toml"], version = "^7.6"}
-safety = "^3.2.11"
+safety = "^3.2.13"
 mypy = ">=0.961"
 typeguard = "^4"
 xdoctest = {extras = ["colors"], version = "^1.2.0"}
