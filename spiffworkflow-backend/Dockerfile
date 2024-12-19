@@ -39,7 +39,7 @@ RUN pip install poetry==1.6.1 \
   && rm -rf /var/lib/apt/lists/*
 
 # Install additional Python dependencies
-RUN pip install hdbcli pandas openpyxl postgres aes-everywhere pybase64 jinja2 xmltodict
+RUN pip install hdbcli pandas openpyxl postgres aes-everywhere pybase64 jinja2 xmltodict oracledb
 
 # Copy project files for Poetry dependency installation
 COPY pyproject.toml poetry.lock /app/
