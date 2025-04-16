@@ -22,7 +22,7 @@ FROM base AS deployment
 # jq because it is really useful, even for scenarios where people might have environment variables with json values they might need to use for configs. about 1MB.
 RUN apt-get update \
   && apt-get install -y -q libaio1 \
-  && apt-get install -y -q git-core curl procps gunicorn3 default-mysql-client vim-tiny jq \
+  && apt-get install -y -q git-core curl procps gunicorn3 default-mysql-client vim-tiny jq libkrb5support0 libexpat1 \
   && rm -rf /var/lib/apt/lists/*
 
 # keep pip up to date

@@ -1,6 +1,6 @@
 import Editor from '@monaco-editor/react';
 import { useEffect, useState } from 'react';
-import { Button } from '@carbon/react';
+import Button from '@mui/material/Button';
 import HttpService from '../services/HttpService';
 
 export default function AuthenticationConfiguration() {
@@ -28,10 +28,12 @@ export default function AuthenticationConfiguration() {
 
   return (
     <>
-      <Button onClick={() => saveAuthConfig()}>Salvar</Button>
+      <Button variant="contained" onClick={() => saveAuthConfig()}>
+        Save
+      </Button>
       <br />
       <br />
-      <h2>Configuração Local</h2>
+      <h2>Local Configuration</h2>
       <br />
       <Editor
         height={600}

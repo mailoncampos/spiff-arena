@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import {
   Button,
-  TextInput,
+  TextField,
   Stack,
-  Modal,
-  // @ts-ignore
-} from '@carbon/react';
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+} from '@mui/material';
 import { ProcessInstanceReport, ReportMetadata } from '../interfaces';
 import HttpService from '../services/HttpService';
 
@@ -21,7 +24,7 @@ export default function ProcessInstanceListSaveAsReport({
   onSuccess,
   processInstanceReportSelection,
   buttonClassName,
-  buttonText = 'Salvar a Perspectiva',
+  buttonText = 'Save as Perspective',
   reportMetadata,
 }: OwnProps) {
   const [identifier, setIdentifier] = useState<string>(
@@ -71,41 +74,53 @@ export default function ProcessInstanceListSaveAsReport({
 
   let textInputComponent = null;
   textInputComponent = (
-    <TextInput
+    <TextField
       id="identifier"
       name="identifier"
-      labelText="Identificador"
-      className="no-wrap"
-      inline
+      label="Identifier"
+      variant="outlined"
+      fullWidth
       value={identifier}
       onChange={(e: any) => setIdentifier(e.target.value)}
     />
   );
 
   let descriptionText =
-    'Salve as colunas e filtros atuais como uma perspectiva para que você possa voltar a esta visualização no futuro.';
+    'Save the current columns and filters as a perspective so you can come back to this view in the future.';
   if (processInstanceReportSelection) {
     descriptionText =
-    'Mantenha o mesmo identificador e clique em Salvar para atualizar a perspectiva atual. Mude o identificador se quiser salvar a visualização atual com um novo nome.';  
+      'Keep the identifier the same and click Save to update the current perspective. Change the identifier if you want to save the current view with a new name.';
   }
 
   return (
-    <Stack gap={5} orientation="horizontal">
-      <Modal
+    <Stack direction="row" spacing={2}>
+      <Dialog
         open={showSaveForm}
-        modalHeading="Salva Perspectiva"
-        primaryButtonText="Salvar"
-        primaryButtonDisabled={!identifier}
-        onRequestSubmit={addProcessInstanceReport}
-        onRequestClose={handleSaveFormClose}
-        hasScrollingContent
-        aria-label="save perspective"
+        onClose={handleSaveFormClose}
+        aria-labelledby="save-perspective-dialog"
       >
-        <p className="data-table-description">{descriptionText}</p>
-        {textInputComponent}
-      </Modal>
+        <DialogTitle id="save-perspective-dialog">Save Perspective</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" style={{ marginBottom: '1rem' }}>
+            {descriptionText}
+          </Typography>
+          {textInputComponent}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleSaveFormClose} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={addProcessInstanceReport}
+            color="primary"
+            disabled={!identifier}
+          >
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Button
-        kind="tertiary"
+        variant="outlined"
         className={buttonClassName}
         onClick={() => {
           setIdentifier(processInstanceReportSelection?.identifier || '');

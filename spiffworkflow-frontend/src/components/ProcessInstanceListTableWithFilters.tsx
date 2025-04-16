@@ -23,8 +23,21 @@ import {
   ComboBox,
   TextInput,
   FormLabel,
-  Checkbox,
 } from '@carbon/react';
+
+import {
+  Button as MuiButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Checkbox as MuiCheckbox,
+  FormControl,
+  FormControlLabel,
+  InputLabel,
+  Select,
+  MenuItem,
+} from '@mui/material';
 import { useDebouncedCallback } from 'use-debounce';
 import {
   PROCESS_STATUSES,
@@ -57,7 +70,10 @@ import {
   FilterDisplayTypeMapping,
   SpiffTableHeader,
 } from '../interfaces';
-import ProcessModelSearch from './ProcessModelSearch';
+
+// MUI
+import ProcessModelSearchCarbon from './ProcessModelSearchCarbon';
+
 import ProcessInstanceReportSearch from './ProcessInstanceReportSearch';
 import ProcessInstanceListDeleteReport from './ProcessInstanceListDeleteReport';
 import ProcessInstanceListSaveAsReport from './ProcessInstanceListSaveAsReport';
@@ -555,13 +571,13 @@ export default function ProcessInstanceListTableWithFilters({
 
   const processInstanceReportSaveTag = () => {
     if (processInstanceReportJustSaved) {
-      let titleOperation = 'Atualizado';
+      let titleOperation = 'Updated';
       if (processInstanceReportJustSaved === 'new') {
-        titleOperation = 'Criado';
+        titleOperation = 'Created';
       }
       return (
         <Notification
-          title={`Perspectiva: ${titleOperation}`}
+          title={`Perspective: ${titleOperation}`}
           onClose={() => setProcessInstanceReportJustSaved(null)}
         >
           <span>{`'${
@@ -619,22 +635,22 @@ export default function ProcessInstanceListTableWithFilters({
 
     let message = '';
     if (isTrueComparison(startFromSeconds, '>', startToSeconds)) {
-      message = '"Data de início de" não pode ser depois de "Data de início até"';
+      message = '"Start date from" cannot be after "start date to"';
     }
     if (isTrueComparison(endFromSeconds, '>', endToSeconds)) {
-      message = '"Data de término de" não pode ser depois de "Data de término até"';
+      message = '"End date from" cannot be after "end date to"';
     }
     if (isTrueComparison(startFromSeconds, '>', endFromSeconds)) {
-      message = '"Data de início de" não pode ser depois de "Data de término de"';
+      message = '"Start date from" cannot be after "end date from"';
     }
     if (isTrueComparison(startToSeconds, '>', endToSeconds)) {
-      message = '"Data de início até" não pode ser depois de "Data de término até"';
+      message = '"Start date to" cannot be after "end date to"';
     }
     if (message !== '') {
       addError({ message } as ErrorForDisplay);
     } else {
       removeError();
-    }    
+    }
   };
 
   const reportColumns = () => {
@@ -702,7 +718,7 @@ export default function ProcessInstanceListTableWithFilters({
         <TimePicker
           invalid={timeInvalid}
           id={`time-picker-${name}`}
-          labelText="Selecione uma hora"
+          labelText="Select a time"
           pattern="^([01]\d|2[0-3]):?([0-5]\d)$"
           value={initialTime}
           onChange={(event: any) => {
@@ -739,7 +755,7 @@ export default function ProcessInstanceListTableWithFilters({
     }
     return (
       <MultiSelect
-        label="Escolha um Status"
+        label="Choose Status"
         className="our-class"
         id="process-instance-status-select"
         titleText="Status"
@@ -761,9 +777,11 @@ export default function ProcessInstanceListTableWithFilters({
     );
   };
 
-  const processInstanceReportDidChange = (selection: any, mode?: string) => {
+  const processInstanceReportDidChange = (
+    selectedReport: any,
+    mode?: string,
+  ) => {
     clearFilters();
-    const selectedReport = selection.selectedItem;
     setProcessInstanceReportSelection(selectedReport);
     removeError();
     setProcessInstanceReportJustSaved(mode || null);
@@ -799,7 +817,7 @@ export default function ProcessInstanceListTableWithFilters({
       <ProcessInstanceListSaveAsReport
         onSuccess={onSaveReportSuccess}
         buttonClassName="narrow-button"
-        buttonText="Salvar"
+        buttonText="Save"
         processInstanceReportSelection={processInstanceReportSelection}
         reportMetadata={reportMetadata}
       />
@@ -807,7 +825,7 @@ export default function ProcessInstanceListTableWithFilters({
   };
 
   const onDeleteReportSuccess = () => {
-    processInstanceReportDidChange({ selectedItem: null });
+    processInstanceReportDidChange(undefined);
   };
 
   const deleteReportComponent = () => {
@@ -1015,8 +1033,8 @@ export default function ProcessInstanceListTableWithFilters({
             return null;
           }}
           shouldFilterItem={shouldFilterReportColumn}
-          placeholder="Selecione uma coluna para exibir"
-          titleText="Coluna"
+          placeholder="Choose a column to show"
+          titleText="Column"
           selectedItem={reportColumnToOperateOn}
         />,
       );
@@ -1069,8 +1087,8 @@ export default function ProcessInstanceListTableWithFilters({
       );
       formElements.push(
         <Dropdown
-          titleText="Operador"
-          label="Operador"
+          titleText="Operator"
+          label="Operator"
           id="report-column-condition-operator"
           items={Object.keys(filterOperatorMappings)}
           selectedItem={operator || null}
@@ -1088,7 +1106,7 @@ export default function ProcessInstanceListTableWithFilters({
           <TextInput
             id="report-column-condition-value"
             name="report-column-condition-value"
-            labelText="Valor da condição"
+            labelText="Condition Value"
             value={
               reportColumnToOperateOn
                 ? reportColumnToOperateOn.filter_field_value
@@ -1104,15 +1122,15 @@ export default function ProcessInstanceListTableWithFilters({
     );
     const modalHeading =
       reportColumnFormMode === 'new'
-        ? 'Adicionar Coluna'
-        : `Editar ${
+        ? 'Add Column'
+        : `Edit ${
             reportColumnToOperateOn ? reportColumnToOperateOn.accessor : ''
-          } coluna`;
+          } column`;
     return (
       <Modal
         open={showReportColumnForm}
         modalHeading={modalHeading}
-        primaryButtonText="Salvar"
+        primaryButtonText="Save"
         primaryButtonDisabled={!reportColumnToOperateOn}
         onRequestSubmit={handleUpdateReportColumn}
         onRequestClose={handleColumnFormClose}
@@ -1148,7 +1166,7 @@ export default function ProcessInstanceListTableWithFilters({
                 kind="ghost"
                 size="sm"
                 className={`button-tag ${tagTypeClass}`}
-                title={`Editar ${reportColumnForEditing.accessor} coluna`}
+                title={`Edit ${reportColumnForEditing.accessor} column`}
                 onClick={() => {
                   setReportColumnToOperateOn(reportColumnForEditing);
                   setShowReportColumnForm(true);
@@ -1160,7 +1178,7 @@ export default function ProcessInstanceListTableWithFilters({
               <Button
                 data-qa="remove-report-column"
                 renderIcon={Close}
-                iconDescription="Remover Coluna"
+                iconDescription="Remove Column"
                 className={`button-tag-icon ${tagTypeClass}`}
                 hasIconOnly
                 size="sm"
@@ -1178,7 +1196,7 @@ export default function ProcessInstanceListTableWithFilters({
             <Button
               data-qa="add-column-button"
               renderIcon={AddAlt}
-              iconDescription="Opções da Coluna"
+              iconDescription="Column options"
               className="with-tiny-top-margin"
               kind="ghost"
               hasIconOnly
@@ -1203,100 +1221,108 @@ export default function ProcessInstanceListTableWithFilters({
     if (!showAdvancedOptions || !reportMetadata) {
       return null;
     }
-    const formElements = (
-      <>
-        <Grid fullWidth>
-          <Column md={4} lg={8} sm={2}>
-            <Dropdown
-              id="system-report-dropdown"
-              titleText="System report"
-              label="Reportar Sistema"
-              items={['', ...systemReportOptions]}
-              itemToString={(item: any) => titleizeString(item)}
-              selectedItem={systemReport}
-              onChange={(value: any) => {
+    return (
+      <Dialog
+        open={showAdvancedOptions}
+        onClose={handleAdvancedOptionsClose}
+        aria-labelledby="advanced-filter-options-title"
+        fullWidth
+        maxWidth="md"
+      >
+        <DialogTitle id="advanced-filter-options-title">
+          Advanced filter options
+        </DialogTitle>
+        <DialogContent>
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="system-report-label">System report</InputLabel>
+            <Select
+              labelId="system-report-label"
+              label="System report"
+              value={systemReport || ''}
+              onChange={(event) => {
+                const { value } = event.target;
                 systemReportOptions.forEach((systemReportOption: string) => {
                   insertOrUpdateFieldInReportMetadata(
                     reportMetadata,
                     systemReportOption,
-                    value.selectedItem === systemReportOption,
+                    value === systemReportOption,
                   );
-                  setSystemReport(value.selectedItem);
+                  setSystemReport(value);
                 });
               }}
-            />
-          </Column>
-          <Column md={4} lg={8} sm={2}>
-            <Dropdown
-              id="user-group-dropdown"
-              titleText="Grupo de usuário atribuído"
-              label="Grupo de usuário atribuído"
-              items={['', ...userGroups]}
-              itemToString={(item: any) => item}
-              selectedItem={selectedUserGroup}
-              onChange={(value: any) => {
+            >
+              {['', ...systemReportOptions].map((option) => (
+                <MenuItem key={option} value={option}>
+                  {titleizeString(option)}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="user-group-label">Assigned user group</InputLabel>
+            <Select
+              label="Assigned user group"
+              labelId="user-group-label"
+              value={selectedUserGroup || ''}
+              onChange={(event) => {
+                const { value } = event.target;
                 insertOrUpdateFieldInReportMetadata(
                   reportMetadata,
                   'user_group_identifier',
-                  value.selectedItem,
+                  value,
                 );
-                setSelectedUserGroup(value.selectedItem);
+                setSelectedUserGroup(value);
               }}
-            />
-          </Column>
-        </Grid>
-        <br />
-        <Grid fullWidth>
-          <Column md={4} lg={8} sm={2}>
-            <Checkbox
-              labelText="Incluir informações sobre a atividade aberta mais antiga."
-              id="with-oldest-open-task-checkbox"
-              checked={withOldestOpenTask}
-              disabled={showActionsColumn}
-              onChange={(value: any) => {
-                insertOrUpdateFieldInReportMetadata(
-                  reportMetadata,
-                  'with_oldest_open_task',
-                  value.target.checked,
-                );
-                setWithOldestOpenTask(value.target.checked);
-              }}
-            />
-          </Column>
-          {variant === 'all' ? (
-            <Column md={4} lg={8} sm={2}>
-              <Checkbox
-                labelText="Incluir atividades para mim."
-                id="with-relation-to-me"
-                checked={withRelationToMe}
-                onChange={(value: any) => {
+            >
+              {['', ...userGroups].map((group) => (
+                <MenuItem key={group} value={group}>
+                  {group}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <FormControlLabel
+            control={
+              <MuiCheckbox
+                checked={withOldestOpenTask}
+                disabled={showActionsColumn}
+                onChange={(event) => {
                   insertOrUpdateFieldInReportMetadata(
                     reportMetadata,
-                    'with_relation_to_me',
-                    value.target.checked,
+                    'with_oldest_open_task',
+                    event.target.checked,
                   );
-                  setWithRelationToMe(value.target.checked);
+                  setWithOldestOpenTask(event.target.checked);
                 }}
               />
-            </Column>
-          ) : null}
-        </Grid>
-        <div className="vertical-spacer-to-allow-combo-box-to-expand-in-modal" />
-      </>
-    );
-    return (
-      <Modal
-        open={showAdvancedOptions}
-        modalHeading="Opções avançadas de filtro"
-        primaryButtonText="Fechar"
-        onRequestSubmit={handleAdvancedOptionsClose}
-        onRequestClose={handleAdvancedOptionsClose}
-        hasScrollingContent
-        aria-label="advanced filter options"
-        size="lg"
-      >
-        {formElements}
-      </Modal>
+            }
+            label="Include oldest open task information"
+          />
+          {variant === 'all' && (
+            <FormControlLabel
+              control={
+                <MuiCheckbox
+                  checked={withRelationToMe}
+                  onChange={(event) => {
+                    insertOrUpdateFieldInReportMetadata(
+                      reportMetadata,
+                      'with_relation_to_me',
+                      event.target.checked,
+                    );
+                    setWithRelationToMe(event.target.checked);
+                  }}
+                />
+              }
+              label="Include tasks for me"
+            />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <MuiButton onClick={handleAdvancedOptionsClose} color="primary">
+            Close
+          </MuiButton>
+        </DialogActions>
+      </Dialog>
     );
   };
 
@@ -1325,14 +1351,14 @@ export default function ProcessInstanceListTableWithFilters({
       <>
         <Grid fullWidth className="with-bottom-margin">
           <Column md={8} lg={16} sm={4}>
-            <FormLabel>Colunas</FormLabel>
+            <FormLabel>Columns</FormLabel>
             <br />
             {columnSelections()}
           </Column>
         </Grid>
         <Grid fullWidth className="with-bottom-margin">
           <Column md={8}>
-            <ProcessModelSearch
+            <ProcessModelSearchCarbon
               onChange={(selection: any) => {
                 const pmSelectionId = selection.selectedItem
                   ? selection.selectedItem.id
@@ -1372,8 +1398,8 @@ export default function ProcessInstanceListTableWithFilters({
                       id="process-instance-initiator-search"
                       data-qa="process-instance-initiator-search"
                       items={processInstanceInitiatorOptions}
-                      placeholder="Comece a digitar o nome de usuário"
-                      titleText="Iniciado por"
+                      placeholder="Start typing username"
+                      titleText="Started by"
                       selectedItem={processInitiatorSelection}
                     />
                   );
@@ -1381,8 +1407,8 @@ export default function ProcessInstanceListTableWithFilters({
                 return (
                   <TextInput
                     id="process-instance-initiator-search"
-                    placeholder="Digite o nome de usuário"
-                    labelText="Iniciado por"
+                    placeholder="Enter username"
+                    labelText="Started by"
                     onChange={(event: any) => {
                       insertOrUpdateFieldInReportMetadata(
                         reportMetadata,
@@ -1401,7 +1427,7 @@ export default function ProcessInstanceListTableWithFilters({
         <Grid fullWidth className="with-bottom-margin">
           <Column md={4}>
             {dateComponent(
-              'Data de início a partir de',
+              'Start date from',
               'start-from',
               startFromDate,
               startFromTime,
@@ -1417,7 +1443,7 @@ export default function ProcessInstanceListTableWithFilters({
           </Column>
           <Column md={4}>
             {dateComponent(
-              'Data de início até',
+              'Start date to',
               'start-to',
               startToDate,
               startToTime,
@@ -1433,7 +1459,7 @@ export default function ProcessInstanceListTableWithFilters({
           </Column>
           <Column md={4}>
             {dateComponent(
-              'Data de fim a partir de',
+              'End date from',
               'end-from',
               endFromDate,
               endFromTime,
@@ -1449,7 +1475,7 @@ export default function ProcessInstanceListTableWithFilters({
           </Column>
           <Column md={4}>
             {dateComponent(
-              'Data de fim até',
+              'End date to',
               'end-to',
               endToDate,
               endToTime,
@@ -1467,27 +1493,25 @@ export default function ProcessInstanceListTableWithFilters({
         <Grid fullWidth className="with-bottom-margin">
           <Column sm={4} md={4} lg={8}>
             <ButtonSet>
-              <Button
-                kind="tertiary"
-                className="narrow-button"
-                onClick={clearFilters}
-              >
-                Limpar
-              </Button>
+              <MuiButton variant="outlined" onClick={clearFilters}>
+                Clear
+              </MuiButton>
             </ButtonSet>
           </Column>
-          <Column sm={3} md={3} lg={7}>
-            {saveAsReportComponent()}
-            {deleteReportComponent()}
+          <Column sm={3} md={3} lg={4}>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              {saveAsReportComponent()}
+              {deleteReportComponent()}
+            </div>
           </Column>
           <Column sm={1} md={1} lg={1}>
             <Button
               kind="ghost"
               onClick={() => setShowAdvancedOptions(true)}
               data-qa="advanced-options-filters"
-              className="narrow-button button-link float-right"
+              className="narrow-button button-link"
             >
-              Avançado
+              Advanced
             </Button>
           </Column>
         </Grid>

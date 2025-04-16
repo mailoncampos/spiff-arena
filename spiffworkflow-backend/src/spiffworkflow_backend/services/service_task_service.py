@@ -10,6 +10,7 @@ from flask import g
 from security import safe_requests  # type: ignore
 from SpiffWorkflow.bpmn import BpmnEvent  # type: ignore
 from SpiffWorkflow.bpmn.exceptions import WorkflowTaskException  # type: ignore
+from SpiffWorkflow.bpmn.serializer.helpers.registry import DefaultRegistry  # type: ignore
 from SpiffWorkflow.spiff.specs.defaults import ServiceTask  # type: ignore
 from SpiffWorkflow.spiff.specs.event_definitions import ErrorEventDefinition  # type: ignore
 from SpiffWorkflow.spiff.specs.event_definitions import EscalationEventDefinition
@@ -59,7 +60,7 @@ class CustomServiceTask(ServiceTask):  # type: ignore
             wte.add_note(str(e))
             raise wte from e
         parsed_result = json.loads(result)
-        spiff_task.data[self._result_variable(spiff_task)] = parsed_result
+        spiff_task.data[self.result_variable] = parsed_result
         return True
 
 
@@ -71,7 +72,7 @@ class ServiceTaskDelegate:
             if value.startswith(secret_prefix):
                 key = value.removeprefix(secret_prefix)
                 secret = SecretService.get_secret(key)
-                with sentry_sdk.start_span(op="task", description="decrypt_secret"):
+                with sentry_sdk.start_span(op="task", name="decrypt_secret"):
                     return SecretService._decrypt(secret.value)
 
             file_prefix = "file:"
@@ -189,10 +190,11 @@ class ServiceTaskDelegate:
         call_url = f"{connector_proxy_url()}/v1/do/{operator_identifier}"
         current_app.logger.info(f"Calling connector proxy using connector: {operator_identifier}")
         task_data = spiff_task.data
-        with sentry_sdk.start_span(op="connector_by_name", description=operator_identifier):
-            with sentry_sdk.start_span(op="call-connector", description=call_url):
+        with sentry_sdk.start_span(op="connector_by_name", name=operator_identifier):
+            with sentry_sdk.start_span(op="call-connector", name=call_url):
                 params = {k: cls.value_with_secrets_replaced(v["value"]) for k, v in bpmn_params.items()}
                 params["spiff__task_data"] = task_data
+                params = DefaultRegistry().convert(params)  # Avoid serlization errors by using the same coverter as the core lib.
 
                 response_text = ""
                 status_code = 0

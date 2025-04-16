@@ -14,6 +14,8 @@ RUN apt-get update \
   curl \
   procps \
   vim-tiny \
+  libkrb5support0 \
+  libexpat1 \
   && rm -rf /var/lib/apt/lists/*
 
 # this matches total memory on spiffworkflow-demo
@@ -31,9 +33,6 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY . /app/
-
-# Convert files to Unix format
-RUN find /app -type f -print0 | xargs -0 dos2unix
 
 RUN cp /app/package.json /app/package.json.bak
 ADD justservewebserver.package.json /app/package.json
@@ -54,6 +53,14 @@ RUN ./bin/build
 
 # Use nginx as the base image
 FROM nginx:1.25.4-bookworm
+
+RUN apt-get update \
+  && apt-get clean -y \
+  && apt-get install -y -q \
+  libkrb5support0 \
+  libexpat1 \
+  libaom3 \
+  && rm -rf /var/lib/apt/lists/*
 
 # Remove default nginx configuration
 RUN rm -rf /etc/nginx/conf.d/*
