@@ -1,12 +1,12 @@
+import { useTranslation } from 'react-i18next';
+
 export default function ServidorForaDoAr() {
+  const { t } = useTranslation();
+
   return (
     <div>
-      <h1>Erro no Servidor</h1>
-      <p>
-        Pedimos desculpas, mas nosso serviço está temporariamente indisponível devido a dificuldades técnicas.
-        Por favor, aguarde enquanto trabalhamos para resolver o problema. Se o problema persistir, entre em contato
-        com o administrador do site.
-      </p>
+      <h1>{t('server_error_title')}</h1>
+      <p>{t('server_error_message')}</p>
     </div>
   );
 }

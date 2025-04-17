@@ -49,6 +49,7 @@ import ExtensionUxElementForDisplay from './ExtensionUxElementForDisplay';
 import { useUriListForPermissions } from '../hooks/UriListForPermissions';
 import { PermissionsToCheck, NavItem } from '../interfaces';
 import { usePermissionFetcher } from '../hooks/PermissionService';
+import { useTranslation } from 'react-i18next';
 
 const drawerWidth = 350;
 const collapsedDrawerWidth = 64;
@@ -87,6 +88,7 @@ function SideNav({
   const isMobile = useMediaQuery((theme: any) => theme.breakpoints.down('sm'));
 
   const location = useLocation();
+  const { t } = useTranslation();
 
   const { targetUris } = useUriListForPermissions();
   const permissionRequestData: PermissionsToCheck = {
@@ -122,7 +124,7 @@ function SideNav({
   if (Object.keys(versionInfo).length) {
     aboutLinkElement = (
       <MuiLink component={Link} to="/about">
-        About
+        {t('about')}
       </MuiLink>
     );
   }
@@ -172,41 +174,41 @@ function SideNav({
 
   const navItems: NavItem[] = [
     {
-      text: 'HOME',
+      text: t('home'),
       icon: <Home />,
       route: '/',
       id: routeIdentifiers.HOME,
     },
     {
-      text: 'PROCESSES',
+      text: t('processes'),
       icon: <Schema />,
       route: '/process-groups',
       id: routeIdentifiers.PROCESSES,
       permissionRoutes: [targetUris.processGroupListPath],
     },
     {
-      text: 'PROCESS INSTANCES',
+      text: t('process_instances'),
       icon: <Timeline />,
       route: '/process-instances',
       id: routeIdentifiers.PROCESS_INSTANCES,
       permissionRoutes: [targetUris.processInstanceListForMePath],
     },
     {
-      text: 'DATA STORES',
+      text: t('data_stores'),
       icon: <Storage />,
       route: '/data-stores',
       id: routeIdentifiers.DATA_STORES,
       permissionRoutes: [targetUris.dataStoreListPath],
     },
     {
-      text: 'MESSAGES',
+      text: t('messages'),
       icon: <Markunread />,
       route: '/messages',
       id: routeIdentifiers.MESSAGES,
       permissionRoutes: [targetUris.messageInstanceListPath],
     },
     {
-      text: 'CONFIGURATION',
+      text: t('configuration'),
       icon: <SettingsApplicationsSharp />,
       route: '/configuration',
       id: routeIdentifiers.CONFIGURATION,
@@ -215,7 +217,7 @@ function SideNav({
         targetUris.authenticationListPath,
       ],
     },
-  ];
+  ];  
 
   const extensionHeaderMenuItemElement = (uxElement: UiSchemaUxElement) => {
     const navItemPage = `/extensions${uxElement.page}`;
